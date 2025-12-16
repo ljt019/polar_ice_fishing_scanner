@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.tauri.app/config/1",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420"
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": [
+      "assets"
+    ]
+  },
+  "productName": "polar_ice_fishing_scanner_gui",
+  "mainBinaryName": "polar_ice_fishing_scanner_gui",
+  "version": "0.1.0",
+  "identifier": "com.polaricefishingscanner.app",
+  "plugins": {},
+  "app": {
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "title": "polar_ice_fishing_scanner_gui",
+        "width": 800,
+        "height": 600,
+        "decorations": true,
+        "transparent": true,
+        "useHttpsScheme": true
+      }
+    ]
+  }
+}
