@@ -2285,7 +2285,6 @@ dependencies = [
  "gpio-cdev",
  "rand 0.8.5",
  "serde",
- "serde_json",
  "spidev",
  "tauri",
  "tauri-build",

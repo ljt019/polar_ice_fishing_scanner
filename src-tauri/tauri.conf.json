@@ -16,9 +16,7 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": [
-      "assets"
-    ]
+    "resources": []
   },
   "productName": "polar_ice_fishing_scanner_gui",
   "mainBinaryName": "polar_ice_fishing_scanner_gui",
