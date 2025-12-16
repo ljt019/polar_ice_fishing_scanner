@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { listen, UnlistenFn } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 
-interface Fish {
+export interface Fish {
   id: number;
   name: string;
   average_size: string;
@@ -70,5 +70,3 @@ export function useFishScanner({
 
   return { fish };
 }
-
-export type { Fish };
