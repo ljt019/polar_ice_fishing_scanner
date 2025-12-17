@@ -25,11 +25,7 @@ function WaitingForFishContent() {
   );
 }
 
-interface FishDisplayContentProps {
-  fish: Fish;
-}
-
-function FishDisplayContent({ fish }: FishDisplayContentProps) {
+function FishDisplayContent({ fish }: { fish: Fish }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="space-y-6 min-h-160">
@@ -82,10 +78,13 @@ function FishDisplayContent({ fish }: FishDisplayContentProps) {
 }
 
 const spring_animation = {
-  initial: { opacity: 0, scale: 0.8 },
-  animate: { opacity: 1, scale: 1 },
-  exit: { opacity: 0, scale: 0.9 },
-  transition: { type: "spring" as const, damping: 18, stiffness: 350 },
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { type: "spring" as const, damping: 18, stiffness: 350 },
+  },
+  exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } },
 };
 
 export default function App() {
@@ -105,11 +104,23 @@ export default function App() {
         <CardContent className="p-6 relative overflow-hidden">
           <AnimatePresence mode="wait">
             {fish ? (
-              <motion.div key="fish-display" {...spring_animation}>
+              <motion.div
+                key="fish-display"
+                variants={spring_animation}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+              >
                 <FishDisplayContent fish={fish} />
               </motion.div>
             ) : (
-              <motion.div key="waiting" {...spring_animation}>
+              <motion.div
+                key="waiting"
+                variants={spring_animation}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+              >
                 <WaitingForFishContent />
               </motion.div>
             )}
