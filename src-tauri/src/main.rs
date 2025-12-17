@@ -148,7 +148,7 @@ fn start_nfc_thread(app_handle: tauri::AppHandle) {
                 println!("Tag removed, ready for next scan.");
             }
 
-            thread::sleep(Duration::from_millis(75));
+            thread::sleep(Duration::from_millis(50));
         }
     });
 }
@@ -163,7 +163,6 @@ fn start_nfc_thread(_app_handle: tauri::AppHandle) {
 //              Debug Commands
 // ###########################################
 
-#[cfg(not(target_os = "linux"))]
 #[tauri::command]
 fn debug_scan_random_fish(app_handle: tauri::AppHandle) {
     let fish_data = FISH_DATA;
@@ -176,12 +175,6 @@ fn debug_scan_random_fish(app_handle: tauri::AppHandle) {
             println!("Debug: Emitted fish data: {}", fish.name);
         }
     }
-}
-
-#[cfg(target_os = "linux")]
-#[tauri::command]
-fn debug_scan_random_fish(_app_handle: tauri::AppHandle) {
-    // No-op on Linux - real NFC reader is used
 }
 
 // ###########################################

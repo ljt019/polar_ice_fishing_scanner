@@ -1,6 +1,6 @@
 import { Snowflake } from "lucide-react";
 
-const SNOWFLAKES = Array.from({ length: 60 }, (_, i) => {
+const SNOWFLAKES = Array.from({ length: 40 }, (_, i) => {
   const sizeCategory = i < 35 ? "sm" : i < 50 ? "md" : "lg";
   const size =
     sizeCategory === "sm"

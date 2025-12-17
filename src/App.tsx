@@ -77,7 +77,7 @@ function FishDisplayContent({ fish }: { fish: Fish }) {
   );
 }
 
-const spring_animation = {
+const springAnimation = {
   hidden: { opacity: 0, scale: 0.8 },
   visible: {
     opacity: 1,
@@ -88,13 +88,13 @@ const spring_animation = {
 };
 
 export default function App() {
-  const { fish } = useFishScanner({ displayDurationSeconds: 10, debugKey: "f" });
+  const { fish } = useFishScanner({ debugKey: "f" });
   useFullscreenOnMount({ enabled: import.meta.env.PROD });
 
   return (
     <div className="min-h-screen bg-linear-to-b from-secondary to-accent flex flex-col justify-center items-center p-4 relative">
       <SnowfallBackground />
-      <Card className="w-full max-w-4xl bg-card/80 backdrop-blur-sm shadow-lg overflow-hidden border-4 border-none z-10 py-0">
+      <Card className="w-full max-w-4xl bg-card shadow-lg overflow-hidden z-10 py-0">
         <CardHeader className="bg-primary text-primary-foreground py-4 rounded-none">
           <CardTitle className="text-3xl font-bold flex items-center justify-between">
             <span>Sno-Port Polar Fish Explorer</span>
@@ -106,7 +106,7 @@ export default function App() {
             {fish ? (
               <motion.div
                 key="fish-display"
-                variants={spring_animation}
+                variants={springAnimation}
                 initial="hidden"
                 animate="visible"
                 exit="exit"
@@ -116,7 +116,7 @@ export default function App() {
             ) : (
               <motion.div
                 key="waiting"
-                variants={spring_animation}
+                variants={springAnimation}
                 initial="hidden"
                 animate="visible"
                 exit="exit"

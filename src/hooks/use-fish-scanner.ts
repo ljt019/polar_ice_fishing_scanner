@@ -18,11 +18,11 @@ export interface Fish {
 
 interface UseFishScannerOptions {
   displayDurationSeconds?: number;
-  debugKey?: string; // Key to trigger debug scan (e.g. "a")
+  debugKey?: string;
 }
 
 export function useFishScanner({
-  displayDurationSeconds = 10,
+  displayDurationSeconds = 3,
   debugKey,
 }: UseFishScannerOptions = {}) {
   const [fish, setFish] = useState<Fish | null>(null);
@@ -41,7 +41,6 @@ export function useFishScanner({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [debugKey]);
 
-  // Listen for fish scan events
   useEffect(() => {
     let unlisten: UnlistenFn | null = null;
 
@@ -57,7 +56,6 @@ export function useFishScanner({
     };
   }, []);
 
-  // Auto-reset after display duration
   useEffect(() => {
     if (!fish) return;
 
