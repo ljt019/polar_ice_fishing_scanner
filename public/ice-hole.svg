@@ -1,0 +1,43 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer ice surface with cracks -->
+  <ellipse cx="100" cy="100" rx="95" ry="85" fill="#e8f4fc" stroke="#b8d4e8" stroke-width="2"/>
+  
+  <!-- Ice cracks radiating out -->
+  <g stroke="#c5dff0" stroke-width="1.5" fill="none" opacity="0.7">
+    <path d="M100 15 L95 35 L100 45"/>
+    <path d="M170 50 L150 55 L145 65"/>
+    <path d="M185 100 L165 98 L155 100"/>
+    <path d="M165 150 L150 140 L145 135"/>
+    <path d="M100 185 L105 165 L100 155"/>
+    <path d="M35 150 L50 140 L55 135"/>
+    <path d="M15 100 L35 102 L45 100"/>
+    <path d="M30 50 L50 55 L55 65"/>
+  </g>
+  
+  <!-- Dark water hole -->
+  <ellipse cx="100" cy="100" rx="55" ry="50" fill="url(#waterGradient)"/>
+  
+  <!-- Inner edge highlight -->
+  <ellipse cx="100" cy="100" rx="55" ry="50" fill="none" stroke="#a0c8e0" stroke-width="3"/>
+  
+  <!-- Water ripples -->
+  <ellipse cx="100" cy="100" rx="40" ry="36" fill="none" stroke="#4a7c9b" stroke-width="1" opacity="0.5">
+    <animate attributeName="rx" values="40;45;40" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="ry" values="36;41;36" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.2;0.5" dur="3s" repeatCount="indefinite"/>
+  </ellipse>
+  <ellipse cx="100" cy="100" rx="25" ry="22" fill="none" stroke="#4a7c9b" stroke-width="1" opacity="0.4">
+    <animate attributeName="rx" values="25;32;25" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="ry" values="22;28;22" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.5s" repeatCount="indefinite"/>
+  </ellipse>
+  
+  <!-- Gradient definitions -->
+  <defs>
+    <radialGradient id="waterGradient" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#3a6a8a"/>
+      <stop offset="100%" stop-color="#1a3a4a"/>
+    </radialGradient>
+  </defs>
+</svg>
+
