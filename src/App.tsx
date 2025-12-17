@@ -73,8 +73,8 @@ function FishDisplayContent({ fish }: { fish: Fish }) {
           <img src={fish.image_path} alt={fish.name} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-linear-to-t from-primary/50 to-transparent"></div>
         </Card>
-        <Card className="p-4">
-          <p className="text-sm text-muted-foreground italic">{fish.blurb}</p>
+        <Card className="p-4 bg-accent">
+          <p className="text-sm text-foreground italic">{fish.blurb}</p>
         </Card>
       </div>
     </div>

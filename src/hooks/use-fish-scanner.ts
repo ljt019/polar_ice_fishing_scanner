@@ -22,7 +22,7 @@ interface UseFishScannerOptions {
 }
 
 export function useFishScanner({
-  displayDurationSeconds = 3,
+  displayDurationSeconds = 10,
   debugKey,
 }: UseFishScannerOptions = {}) {
   const [fish, setFish] = useState<Fish | null>(null);
