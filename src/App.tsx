@@ -9,13 +9,6 @@ import { FishEndangeredStatusBadge } from "@/components/fish-endangered-status-b
 import { useFishScanner } from "@/hooks/use-fish-scanner";
 import { useFullscreenOnMount } from "@/hooks/use-fullscreen-on-mount";
 
-const animation = {
-  initial: { opacity: 0, scale: 0.8 },
-  animate: { opacity: 1, scale: 1 },
-  exit: { opacity: 0, scale: 0.9 },
-  transition: { type: "spring" as const, damping: 18, stiffness: 350 },
-};
-
 function WaitingForFishContent() {
   return (
     <div className="flex flex-col items-center justify-center min-h-160 space-y-6">
@@ -88,7 +81,14 @@ function FishDisplayContent({ fish }: FishDisplayContentProps) {
   );
 }
 
-function App() {
+const spring_animation = {
+  initial: { opacity: 0, scale: 0.8 },
+  animate: { opacity: 1, scale: 1 },
+  exit: { opacity: 0, scale: 0.9 },
+  transition: { type: "spring" as const, damping: 18, stiffness: 350 },
+};
+
+export default function App() {
   const { fish } = useFishScanner({ displayDurationSeconds: 10, debugKey: "f" });
   useFullscreenOnMount({ enabled: import.meta.env.PROD });
 
@@ -105,11 +105,11 @@ function App() {
         <CardContent className="p-6 relative overflow-hidden">
           <AnimatePresence mode="wait">
             {fish ? (
-              <motion.div key="fish-display" {...animation}>
+              <motion.div key="fish-display" {...spring_animation}>
                 <FishDisplayContent fish={fish} />
               </motion.div>
             ) : (
-              <motion.div key="waiting" {...animation}>
+              <motion.div key="waiting" {...spring_animation}>
                 <WaitingForFishContent />
               </motion.div>
             )}
@@ -119,5 +119,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
