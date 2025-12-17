@@ -91,8 +91,6 @@ const springAnimation = {
   exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } },
 };
 
-//import.meta.env.PROD
-
 export default function App() {
   const { fish } = useFishScanner({ debugKey: "f" });
   useFullscreenOnMount({ enabled: true });
