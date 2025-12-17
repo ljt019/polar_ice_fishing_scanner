@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { listen, UnlistenFn } from "@tauri-apps/api/event";
+import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 
 export interface Fish {
@@ -27,7 +27,6 @@ export function useFishScanner({
 }: UseFishScannerOptions = {}) {
   const [fish, setFish] = useState<Fish | null>(null);
 
-  // Debug key listener
   useEffect(() => {
     if (!debugKey) return;
 
@@ -42,26 +41,23 @@ export function useFishScanner({
   }, [debugKey]);
 
   useEffect(() => {
-    let unlisten: UnlistenFn | null = null;
+    const listenerPromise = listen<Fish>("fishData", (event) => {
+      setFish(event.payload);
+    });
 
-    const setupListener = async () => {
-      unlisten = await listen<Fish>("fishData", (event) => {
-        setFish(event.payload);
-      });
-    };
-
-    setupListener();
     return () => {
-      unlisten?.();
+      listenerPromise.then((unlisten) => unlisten());
     };
   }, []);
 
   useEffect(() => {
     if (!fish) return;
 
+    const displayDurationMs = displayDurationSeconds * 1000;
+
     const timeout = setTimeout(() => {
       setFish(null);
-    }, displayDurationSeconds * 1000);
+    }, displayDurationMs);
 
     return () => clearTimeout(timeout);
   }, [fish, displayDurationSeconds]);

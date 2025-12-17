@@ -1,21 +1,18 @@
 import { useEffect } from "react";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 
-const appWindow = getCurrentWebviewWindow();
+const APP_WINDOW = getCurrentWebviewWindow();
+const FULLSCREEN_DELAY_MS = 500;
 
 export function useFullscreenOnMount({ enabled = true } = {}) {
   useEffect(() => {
     if (!enabled) return;
 
-    const maximizeAndFullscreen = async () => {
-      try {
-        await appWindow.maximize();
-        setTimeout(() => appWindow.setFullscreen(true), 500);
-      } catch (err) {
-        console.error("Error during window manipulation:", err);
-      }
+    const enterFullscreen = async () => {
+      await APP_WINDOW.maximize();
+      setTimeout(() => APP_WINDOW.setFullscreen(true), FULLSCREEN_DELAY_MS);
     };
 
-    maximizeAndFullscreen();
+    enterFullscreen();
   }, [enabled]);
 }

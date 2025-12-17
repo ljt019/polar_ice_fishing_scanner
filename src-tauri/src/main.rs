@@ -4,8 +4,6 @@
 use tauri::Emitter;
 
 #[cfg(target_os = "linux")]
-use std::sync::Arc;
-#[cfg(target_os = "linux")]
 use std::thread;
 #[cfg(target_os = "linux")]
 use std::time::Duration;
@@ -104,59 +102,83 @@ const FISH_DATA: &[FishInfo] = &[
 //    NFC Reader (Linux/Raspberry Pi only)
 // ###########################################
 
+// Both real implementatinos for the actual raspberry pi with the reader
+// and the stubs used for debug and development.
+// This only works since I'm developing on a windows machine not a linux
+// machine lol. If you try to develop this from linux the it will try to use a
+// non-existent NFC reader and crash, no such thing as target_os = "raspberry_pi" sadly
+
+#[cfg(target_os = "linux")]
+const TAG_DETECT_TIMEOUT_MS: u64 = 500;
+#[cfg(target_os = "linux")]
+const TAG_REMOVAL_CHECK_MS: u64 = 200;
+#[cfg(target_os = "linux")]
+const TAG_REMOVAL_POLL_MS: u64 = 100;
+#[cfg(target_os = "linux")]
+const MAIN_LOOP_INTERVAL_MS: u64 = 50;
+
+#[cfg(target_os = "linux")]
+fn wait_for_tag_removal(pn532: &mut pn532::Pn532) {
+    while pn532.read_passive_target(TAG_REMOVAL_CHECK_MS).is_some() {
+        thread::sleep(Duration::from_millis(TAG_REMOVAL_POLL_MS));
+    }
+    println!("Tag removed, ready for next scan.");
+}
+
 #[cfg(target_os = "linux")]
 fn start_nfc_thread(app_handle: tauri::AppHandle) {
     thread::spawn(move || {
-        println!("Initializing PN532 NFC reader...");
+        println!("Scanner: Initializing PN532 NFC reader...");
 
         let mut pn532 = match pn532::Pn532::new() {
             Ok(pn532) => pn532,
             Err(e) => {
-                eprintln!("Failed to initialize PN532: {}", e);
+                eprintln!("Scanner: Failed to initialize PN532 - {}", e);
                 return;
             }
         };
 
         if !pn532.sam_config() {
-            eprintln!("Failed to configure PN532 SAM");
+            eprintln!("Scanner: Failed to configure PN532 SAM");
             return;
         }
 
-        println!("PN532 initialized successfully. Scanning for tags...");
-
-        let fish_data = FISH_DATA;
+        println!("Scanner: PN532 initialized successfully. Scanning for tags...");
 
         loop {
-            if pn532.read_passive_target(500).is_some() {
-                if let Some(fish_id) = pn532.read_fish_id() {
-                    println!("Scanned fish ID: {}", fish_id);
-
-                    if let Some(fish) = fish_data.iter().find(|f| f.id == fish_id) {
-                        if let Err(e) = app_handle.emit("fishData", fish) {
-                            eprintln!("Failed to emit fish data: {}", e);
-                        } else {
-                            println!("Emitted fish data: {}", fish.name);
-                        }
-                    } else {
-                        eprintln!("No fish found with ID: {}", fish_id);
-                    }
-                }
-
-                while pn532.read_passive_target(200).is_some() {
-                    thread::sleep(Duration::from_millis(100));
-                }
-                println!("Tag removed, ready for next scan.");
+            if pn532.read_passive_target(TAG_DETECT_TIMEOUT_MS).is_none() {
+                thread::sleep(Duration::from_millis(MAIN_LOOP_INTERVAL_MS));
+                continue;
             }
 
-            thread::sleep(Duration::from_millis(50));
+            let Some(fish_id) = pn532.read_fish_id() else {
+                wait_for_tag_removal(&mut pn532);
+                continue;
+            };
+
+            let Some(fish) = FISH_DATA.iter().find(|f| f.id == fish_id) else {
+                eprintln!("Scanner: Fish ID '{}' - Not Found", fish_id);
+                wait_for_tag_removal(&mut pn532);
+                continue;
+            };
+
+            if let Err(error) = app_handle.emit("fishData", fish) {
+                eprintln!("Scanner: Fish ID '{}' - Failed to Emit {}", fish_id, error);
+                return;
+            }
+
+            println!("Scanner: {} ({})", fish.name, fish_id);
+
+            wait_for_tag_removal(&mut pn532);
         }
     });
 }
 
+/// Stub for debug builds without NFC hardware :D
 #[cfg(not(target_os = "linux"))]
 fn start_nfc_thread(_app_handle: tauri::AppHandle) {
-    println!("NFC reader not available on this platform (non-Linux)");
-    println!("Running in development mode without NFC hardware.");
+    println!("Scanner: NFC reader not available on this platform");
+    println!("Scanner: Running in development mode without NFC hardware.");
 }
 
 // ###########################################
@@ -165,16 +187,21 @@ fn start_nfc_thread(_app_handle: tauri::AppHandle) {
 
 #[tauri::command]
 fn debug_scan_random_fish(app_handle: tauri::AppHandle) {
-    let fish_data = FISH_DATA;
-    let random_id = (rand::random::<u32>() % fish_data.len() as u32) + 1;
+    let random_fish_id = (rand::random::<u32>() % FISH_DATA.len() as u32) + 1;
 
-    if let Some(fish) = fish_data.iter().find(|f| f.id == random_id) {
-        if let Err(e) = app_handle.emit("fishData", fish) {
-            eprintln!("Failed to emit fish data: {}", e);
-        } else {
-            println!("Debug: Emitted fish data: {}", fish.name);
-        }
+    let Some(fish) = FISH_DATA.iter().find(|f| f.id == random_fish_id) else {
+        unreachable!("Scanner: Fish ID '{}' - Not Found", random_fish_id);
+    };
+
+    if let Err(error) = app_handle.emit("fishData", fish) {
+        eprintln!(
+            "Scanner: Fish ID '{}' - Failed to Emit {}",
+            random_fish_id, error
+        );
+        return;
     }
+
+    println!("Scanner: {} ({})", fish.name, random_fish_id);
 }
 
 // ###########################################

@@ -28,9 +28,14 @@ const SPI_READY: u8 = 0x01;
 
 const ACK: [u8; 6] = [0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00];
 
+// Waveshare PN532 NFC HAT pinout:
+//   RSTPDN → BCM 20
+//   NSS    → BCM 4 (directly to D4 (BCM), not directly to the Pi's dedicated SPI0 CE0 pin)
 const RESET_PIN: u32 = 20;
 const NSS_PIN: u32 = 4;
 
+// PN532 SPI uses LSB-first bit order, but Linux SPI is MSB-first
+// so we need to reverse the bits before and after sending/receiving data
 fn reverse_bit(b: u8) -> u8 {
     let mut result: u8 = 0;
     let mut num = b;
@@ -168,6 +173,7 @@ impl Pn532 {
         let checksum: u8 = data.iter().fold(0u8, |acc, &b| acc.wrapping_add(b));
         let dcs = (!checksum).wrapping_add(1);
 
+        // [PREAMBLE 00 FF] [LEN LCS] [DATA...] [DCS POSTAMBLE]
         let mut frame = vec![PN532_PREAMBLE, PN532_STARTCODE1, PN532_STARTCODE2, len, lcs];
         frame.extend_from_slice(data);
         frame.push(dcs);
@@ -246,12 +252,21 @@ impl Pn532 {
     }
 
     pub fn sam_config(&mut self) -> bool {
+        // Normal mode (0x01), timeout 1s (0x14), use IRQ (0x01)
         self.call(CMD_SAMCONFIGURATION, &[0x01, 0x14, 0x01], 0, 1000)
             .is_some()
     }
 
     pub fn read_passive_target(&mut self, timeout_ms: u64) -> Option<Vec<u8>> {
-        let resp = self.call(CMD_INLISTPASSIVETARGET, &[0x01, 0x00], 19, timeout_ms)?;
+        const RESPONSE_LENGTH: usize = 19;
+
+        // Baud 106 kbps / Type A ISO14443A
+        let resp = self.call(
+            CMD_INLISTPASSIVETARGET,
+            &[0x01, 0x00], // MaxTg=0x01, BrTy=0x00
+            RESPONSE_LENGTH,
+            timeout_ms,
+        )?;
 
         if resp.is_empty() || resp[0] != 0x01 {
             return None;
@@ -266,7 +281,7 @@ impl Pn532 {
         None
     }
 
-    /// Read an NTAG2xx block (4 bytes per page, returns 16 bytes = 4 pages)
+    // read an NTAG2xx block (4 bytes per page, returns 16 bytes = 4 pages)
     pub fn ntag_read_block(&mut self, page: u8) -> Option<Vec<u8>> {
         let params = [0x01, NTAG_CMD_READ, page];
         let resp = self.call(CMD_INDATAEXCHANGE, &params, 17, 500)?;
@@ -278,7 +293,6 @@ impl Pn532 {
         Some(resp[1..].to_vec())
     }
 
-    /// looks for "en" followed by digits to find fish id entries
     pub fn read_fish_id(&mut self) -> Option<u32> {
         let mut all_data = Vec::new();
 
@@ -291,6 +305,8 @@ impl Pn532 {
             }
         }
 
+        // for NDEF text records the first 2 bytes are "en"
+        // look for "en" followed by digits to find fish id entries
         if let Some(pos) = all_data.windows(2).position(|w| w == b"en") {
             let start = pos + 2;
             if start < all_data.len() {
