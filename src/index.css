@@ -107,5 +107,8 @@
     }
   html {
     @apply font-sans;
+    /* Scale everything based on viewport - targets ~1080p as baseline */
+    /* Smaller screens shrink, larger screens grow proportionally */
+    font-size: clamp(12px, 1.1vw, 20px);
     }
 } 

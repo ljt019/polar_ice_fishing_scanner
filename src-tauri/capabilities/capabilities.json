@@ -1,0 +1,7 @@
+{
+  "identifier": "main-window",
+  "description": "Permissions for the main window",
+  "local": true,
+  "windows": ["main"],
+  "permissions": ["core:default", "core:window:allow-maximize", "core:window:allow-set-fullscreen"]
+}

@@ -13,7 +13,6 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 tauri = { version = "2", features = [] }
 serde = { version = "1", features = ["derive"] }
-tauri-plugin-shell = "2"
 rand = "0.8"
 
 # PN532 NFC dependencies (Linux/Raspberry Pi only)

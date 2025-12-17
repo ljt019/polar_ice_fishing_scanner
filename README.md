@@ -20,7 +20,7 @@ npm run tauri:dev
 npm run tauri:build
 ```
 
-Press `A` in dev mode to simulate scanning a random fish.
+Press `F` in dev mode to simulate scanning a random fish.
 
 ## Hardware Setup
 

@@ -183,7 +183,6 @@ fn debug_scan_random_fish(app_handle: tauri::AppHandle) {
 
 fn main() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![debug_scan_random_fish])
         .setup(|app| {
             start_nfc_thread(app.handle().clone());

@@ -16,7 +16,11 @@ function WaitingForFishContent() {
       <p className="text-xl text-muted-foreground text-center max-w-3xl">
         Dive into the fascinating world of fish!
       </p>
-      <img src="/ice-hole.svg" alt="Ice fishing hole" className="w-64 h-64" />
+      <img
+        src="/ice-hole.svg"
+        alt="Ice fishing hole"
+        className="w-[20vw] h-[20vw] min-w-32 min-h-32 max-w-64 max-h-64"
+      />
       <p className="text-xl text-muted-foreground text-center max-w-3xl">
         Once you've caught a fish at the fishing pond, you can scan it here and uncover fascinating
         facts about your unique catch.
@@ -65,7 +69,7 @@ function FishDisplayContent({ fish }: { fish: Fish }) {
         </div>
       </div>
       <div className="flex flex-col space-y-4">
-        <Card className="w-full h-80 overflow-hidden relative p-0">
+        <Card className="w-full h-[35vh] min-h-48 overflow-hidden relative p-0">
           <img src={fish.image_path} alt={fish.name} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-linear-to-t from-primary/50 to-transparent"></div>
         </Card>
@@ -87,14 +91,16 @@ const springAnimation = {
   exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } },
 };
 
+//import.meta.env.PROD
+
 export default function App() {
   const { fish } = useFishScanner({ debugKey: "f" });
-  useFullscreenOnMount({ enabled: import.meta.env.PROD });
+  useFullscreenOnMount({ enabled: true });
 
   return (
     <div className="min-h-screen bg-linear-to-b from-secondary to-accent flex flex-col justify-center items-center p-4 relative">
       <SnowfallBackground />
-      <Card className="w-full max-w-4xl bg-card shadow-lg overflow-hidden z-10 py-0">
+      <Card className="w-[95vw] max-w-6xl bg-card shadow-lg overflow-hidden z-10 py-0">
         <CardHeader className="bg-primary text-primary-foreground py-4 rounded-none">
           <CardTitle className="text-3xl font-bold flex items-center justify-between">
             <span>Sno-Port Polar Fish Explorer</span>
